@@ -1,0 +1,71 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: ml-intermediate-
+spec:
+  entrypoint: dag
+  templates:
+  - inputs:
+      parameters:
+      - name: task_name
+    name: run-task
+    script:
+      command:
+      - bash
+      image: ml-intermediate:latest
+      imagePullPolicy: Never
+      source: |-
+        ploomber task {{inputs.parameters.task_name}} --entry-point pipeline.yaml --force
+      volumeMounts:
+      - mountPath: /mnt/shared-folder
+        name: shared-folder
+        subPath: ''
+      workingDir: null
+  - dag:
+      tasks:
+      - arguments:
+          parameters:
+          - name: task_name
+            value: get
+        dependencies: []
+        name: get
+        template: run-task
+      - arguments:
+          parameters:
+          - name: task_name
+            value: sepal-area
+        dependencies:
+        - get
+        name: sepal-area
+        template: run-task
+      - arguments:
+          parameters:
+          - name: task_name
+            value: petal-area
+        dependencies:
+        - get
+        name: petal-area
+        template: run-task
+      - arguments:
+          parameters:
+          - name: task_name
+            value: join
+        dependencies:
+        - petal-area
+        - get
+        - sepal-area
+        name: join
+        template: run-task
+      - arguments:
+          parameters:
+          - name: task_name
+            value: fit
+        dependencies:
+        - join
+        name: fit
+        template: run-task
+    name: dag
+  volumes:
+  - hostPath:
+      path: /host
+    name: shared-folder

@@ -1,0 +1,19 @@
+meta:
+  jupyter_functions_as_notebooks: True
+  import_tasks_from: partial.features.yaml
+
+#clients:
+#  File: clients.get_s3
+
+tasks:
+  - source: tasks.get.fn
+    name: get
+    product: '{{root}}/sample={{sample}}/get.parquet'
+    params:
+      sample: '{{sample}}'
+
+  - source: fit.py
+    name: fit
+    product:
+        nb: '{{root}}/sample={{sample}}/nb.html'
+        model: '{{root}}/sample={{sample}}/model.pickle'
