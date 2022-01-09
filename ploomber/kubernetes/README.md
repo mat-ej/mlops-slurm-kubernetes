@@ -14,7 +14,7 @@ create cluster
     k3d cluster create mycluster
 
     #optional: export config into a default location
-    k3d kubeconfig get localk3d > ~/.kube/config
+    k3d kubeconfig get mycluster > ~/.kube/config
     export KUBECONFIG=~/.kube/config
     
     # check cluster
