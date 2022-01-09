@@ -19,7 +19,7 @@ Working examples so far:
     srun {{command}}
 ```
 
-2. **Nextflow** - runs very well on K8s, Slurm, Dask and many others, not focused on ML and hence not ML friendly. No complex DAGs with loops. 
+2. **Nextflow pipelines** - runs very well on K8s, Slurm, Dask and many others, not focused on ML and hence not ML friendly. No complex DAGs with loops. 
 
    [http://docs.cerit.io/docs/nextflow.html](http://docs.cerit.io/docs/nextflow.html)
 
