@@ -28,4 +28,9 @@ Working examples so far:
 
    [http://docs.cerit.io/docs/kubeflow.html](http://docs.cerit.io/docs/kubeflow.html)
 
+   **working-examples include:**
+   1. recursion.py - how to define recursive pipeline using kubeflow
+   2. produce_consume_df.py - how to pass pandas dataframe between pipeline components.
+   3. others...
+
 
