@@ -18,6 +18,10 @@ Examples so far:
     conda activate myenv
     srun {{command}}
 ```
+2. **Kubeflow pipelines** - runs on K8s, supports complex DAGs, running on slurm would requires additional development
 
+   [http://docs.cerit.io/docs/kubeflow.html](http://docs.cerit.io/docs/kubeflow.html)
 
-2. Nextflow
+3. **Nextflow** - able to run on K8s and Slurm, not ML friendly
+
+   [http://docs.cerit.io/docs/nextflow.html](http://docs.cerit.io/docs/nextflow.html)

@@ -1,0 +1,164 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: my-pipeline-
+  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.6, pipelines.kubeflow.org/pipeline_compilation_time: '2021-10-26T13:54:12.949118',
+    pipelines.kubeflow.org/pipeline_spec: '{"name": "my-pipeline"}'}
+  labels: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.6}
+spec:
+  entrypoint: my-pipeline
+  templates:
+  - name: for-loop-2
+    parallelism: 10
+    inputs:
+      parameters:
+      - {name: loop-item-param-1}
+      - {name: loop-item-param-1-subvar-A_a}
+      - {name: loop-item-param-1-subvar-B_b}
+    dag:
+      tasks:
+      - name: print-op
+        template: print-op
+        arguments:
+          parameters:
+          - {name: loop-item-param-1, value: '{{inputs.parameters.loop-item-param-1}}'}
+      - name: print-op-2
+        template: print-op-2
+        arguments:
+          parameters:
+          - {name: loop-item-param-1-subvar-A_a, value: '{{inputs.parameters.loop-item-param-1-subvar-A_a}}'}
+      - name: print-op-3
+        template: print-op-3
+        arguments:
+          parameters:
+          - {name: loop-item-param-1-subvar-B_b, value: '{{inputs.parameters.loop-item-param-1-subvar-B_b}}'}
+  - name: my-pipeline
+    dag:
+      tasks:
+      - name: for-loop-2
+        template: for-loop-2
+        arguments:
+          parameters:
+          - {name: loop-item-param-1, value: '{{item}}'}
+          - {name: loop-item-param-1-subvar-A_a, value: '{{item.A_a}}'}
+          - {name: loop-item-param-1-subvar-B_b, value: '{{item.B_b}}'}
+        withItems:
+        - {A_a: 1, B_b: 2}
+        - {A_a: 10, B_b: 20}
+  - name: print-op
+    container:
+      args: [--s, '{{inputs.parameters.loop-item-param-1}}']
+      command:
+      - sh
+      - -ec
+      - |
+        program_path=$(mktemp)
+        printf "%s" "$0" > "$program_path"
+        python3 -u "$program_path" "$@"
+      - |
+        def print_op(s):
+            print(s)
+
+        import argparse
+        _parser = argparse.ArgumentParser(prog='Print op', description='')
+        _parser.add_argument("--s", dest="s", type=str, required=True, default=argparse.SUPPRESS)
+        _parsed_args = vars(_parser.parse_args())
+
+        _outputs = print_op(**_parsed_args)
+      image: python:3.7
+    inputs:
+      parameters:
+      - {name: loop-item-param-1}
+    metadata:
+      labels:
+        pipelines.kubeflow.org/kfp_sdk_version: 1.8.6
+        pipelines.kubeflow.org/pipeline-sdk-type: kfp
+        pipelines.kubeflow.org/enable_caching: "true"
+      annotations: {pipelines.kubeflow.org/component_spec: '{"implementation": {"container":
+          {"args": ["--s", {"inputValue": "s"}], "command": ["sh", "-ec", "program_path=$(mktemp)\nprintf
+          \"%s\" \"$0\" > \"$program_path\"\npython3 -u \"$program_path\" \"$@\"\n",
+          "def print_op(s):\n    print(s)\n\nimport argparse\n_parser = argparse.ArgumentParser(prog=''Print
+          op'', description='''')\n_parser.add_argument(\"--s\", dest=\"s\", type=str,
+          required=True, default=argparse.SUPPRESS)\n_parsed_args = vars(_parser.parse_args())\n\n_outputs
+          = print_op(**_parsed_args)\n"], "image": "python:3.7"}}, "inputs": [{"name":
+          "s", "type": "String"}], "name": "Print op"}', pipelines.kubeflow.org/component_ref: '{}',
+        pipelines.kubeflow.org/arguments.parameters: '{"s": "{{inputs.parameters.loop-item-param-1}}"}'}
+  - name: print-op-2
+    container:
+      args: [--s, '{{inputs.parameters.loop-item-param-1-subvar-A_a}}']
+      command:
+      - sh
+      - -ec
+      - |
+        program_path=$(mktemp)
+        printf "%s" "$0" > "$program_path"
+        python3 -u "$program_path" "$@"
+      - |
+        def print_op(s):
+            print(s)
+
+        import argparse
+        _parser = argparse.ArgumentParser(prog='Print op', description='')
+        _parser.add_argument("--s", dest="s", type=str, required=True, default=argparse.SUPPRESS)
+        _parsed_args = vars(_parser.parse_args())
+
+        _outputs = print_op(**_parsed_args)
+      image: python:3.7
+    inputs:
+      parameters:
+      - {name: loop-item-param-1-subvar-A_a}
+    metadata:
+      labels:
+        pipelines.kubeflow.org/kfp_sdk_version: 1.8.6
+        pipelines.kubeflow.org/pipeline-sdk-type: kfp
+        pipelines.kubeflow.org/enable_caching: "true"
+      annotations: {pipelines.kubeflow.org/component_spec: '{"implementation": {"container":
+          {"args": ["--s", {"inputValue": "s"}], "command": ["sh", "-ec", "program_path=$(mktemp)\nprintf
+          \"%s\" \"$0\" > \"$program_path\"\npython3 -u \"$program_path\" \"$@\"\n",
+          "def print_op(s):\n    print(s)\n\nimport argparse\n_parser = argparse.ArgumentParser(prog=''Print
+          op'', description='''')\n_parser.add_argument(\"--s\", dest=\"s\", type=str,
+          required=True, default=argparse.SUPPRESS)\n_parsed_args = vars(_parser.parse_args())\n\n_outputs
+          = print_op(**_parsed_args)\n"], "image": "python:3.7"}}, "inputs": [{"name":
+          "s", "type": "String"}], "name": "Print op"}', pipelines.kubeflow.org/component_ref: '{}',
+        pipelines.kubeflow.org/arguments.parameters: '{"s": "{{inputs.parameters.loop-item-param-1-subvar-A_a}}"}'}
+  - name: print-op-3
+    container:
+      args: [--s, '{{inputs.parameters.loop-item-param-1-subvar-B_b}}']
+      command:
+      - sh
+      - -ec
+      - |
+        program_path=$(mktemp)
+        printf "%s" "$0" > "$program_path"
+        python3 -u "$program_path" "$@"
+      - |
+        def print_op(s):
+            print(s)
+
+        import argparse
+        _parser = argparse.ArgumentParser(prog='Print op', description='')
+        _parser.add_argument("--s", dest="s", type=str, required=True, default=argparse.SUPPRESS)
+        _parsed_args = vars(_parser.parse_args())
+
+        _outputs = print_op(**_parsed_args)
+      image: python:3.7
+    inputs:
+      parameters:
+      - {name: loop-item-param-1-subvar-B_b}
+    metadata:
+      labels:
+        pipelines.kubeflow.org/kfp_sdk_version: 1.8.6
+        pipelines.kubeflow.org/pipeline-sdk-type: kfp
+        pipelines.kubeflow.org/enable_caching: "true"
+      annotations: {pipelines.kubeflow.org/component_spec: '{"implementation": {"container":
+          {"args": ["--s", {"inputValue": "s"}], "command": ["sh", "-ec", "program_path=$(mktemp)\nprintf
+          \"%s\" \"$0\" > \"$program_path\"\npython3 -u \"$program_path\" \"$@\"\n",
+          "def print_op(s):\n    print(s)\n\nimport argparse\n_parser = argparse.ArgumentParser(prog=''Print
+          op'', description='''')\n_parser.add_argument(\"--s\", dest=\"s\", type=str,
+          required=True, default=argparse.SUPPRESS)\n_parsed_args = vars(_parser.parse_args())\n\n_outputs
+          = print_op(**_parsed_args)\n"], "image": "python:3.7"}}, "inputs": [{"name":
+          "s", "type": "String"}], "name": "Print op"}', pipelines.kubeflow.org/component_ref: '{}',
+        pipelines.kubeflow.org/arguments.parameters: '{"s": "{{inputs.parameters.loop-item-param-1-subvar-B_b}}"}'}
+  arguments:
+    parameters: []
+  serviceAccountName: pipeline-runner
