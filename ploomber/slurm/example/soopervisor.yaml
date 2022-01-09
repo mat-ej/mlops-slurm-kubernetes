@@ -1,0 +1,2 @@
+cluster:
+  backend: slurm
