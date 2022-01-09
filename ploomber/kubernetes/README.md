@@ -52,6 +52,10 @@ Then, open: https://127.0.0.1:2746
 # Ploomber project set up
 See ../ploomber.md to set up conda environment
 
+    #make folder for pipeline outputs
+    export SHARED_DIR=$HOME/ploomber-k8s
+    mkdir -p $SHARED_DIR
+
     conda activate ploomber39
     # optional remove existing project cloned from github
     rm -rf ml-intermediate
