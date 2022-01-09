@@ -2,6 +2,15 @@
     docker kill $(docker ps -q)
     docker rm $(docker ps -a -q)
 
+# rci cluster login and folder attach
+    #!/usr/bin/env bash
+    sshpass -p <password> ssh uhrinmat@login.rci.cvut.cz
+    
+    #rm -rf ~/rci_home
+    #mkdir ~/rci_home
+    sshfs -o password_stdin uhrinmat@login.rci.cvut.cz:/home/uhrinmat ~/rci_home/ <<< '<password>'
+
+
 # Installation of kubectl 
 #TODO
 
