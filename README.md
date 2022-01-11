@@ -4,19 +4,23 @@ MLops tools review focused on pipeline execution using multiple clusters: slurm,
 Working examples so far:
 1. **Ploomber pipelines** - runs on Slurm, K8s, Airflow, Kubeflow(in progress), no complex DAGs with loops/recursions yet.
    1. Kubernetes - example runs pipeline on local k8s using argo
-   2. Slurm - example transforms pipeline using a script into batch jobs
-   
+   2. Slurm - Ploomber transforms the pipeline into batch jobs waiting for the completion of the previous jobs. Example batch job submit template looks as follows: 
 ```
-    For example, since we want the tasks to run in the conda environment we created, edit the template.sh so it looks like this:
-
-    #!/bin/bash
-    #SBATCH --job-name={{name}}
-    #SBATCH --output=result.out
-    #
-    
-    # activate myenv
-    conda activate myenv
-    srun {{command}}
+   #!/bin/bash
+   #SBATCH --job-name={{name}}
+   #SBATCH --output=result.out
+   #
+   
+   # load anaconda module
+   module purge
+   ml Anaconda3/2021.05
+   # activate prepared environment
+   
+   eval "$(conda shell.bash hook)"
+   conda activate $HOME/anaconda/cookbook-grid
+   
+   #srun with specified env variables above.
+   srun {{command}}
 ```
 
 2. **Nextflow pipelines** - runs very well on K8s, Slurm, Dask and many others, not focused on ML and hence not ML friendly. No complex DAGs with loops. 
