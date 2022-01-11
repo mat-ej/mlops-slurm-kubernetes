@@ -1,75 +1,86 @@
 # Running ploomber pipelines on Slurm
 
 #### Notes:
-Q: Why does slurm not require containerization? it is enough to set the env once. 
+1. ploomber containerizes with a single container i.e. single conda/singularity environment for the whole pipeline.
+
+**slurm commands**
+
+    ml avail | grep "singularity"
 
 
-## Local slurm cluster
-run docker compose up.
-TODO
 ## Remote slurm cluster = rci
 ssh into rci
 
     #!/usr/bin/env bash
-    sshpass -p <password> ssh uhrinmat@login.rci.cvut.cz
+    sshpass -p <password> ssh <login>@login.rci.cvut.cz
     
     #rm -rf ~/rci_home
     #mkdir ~/rci_home
     sshfs -o password_stdin uhrinmat@login.rci.cvut.cz:/home/uhrinmat ~/rci_home/ <<< '<password>'
 
+## optional:  ploomber installation
+install into some conda environment on a slurm login node
 
-#### optional install miniconda
-    # install miniconda (to get a Python environment ready, not needed if
-    # there's already a Python environment up and running)
-    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-    bash ~/Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda
+    (base)$pip install ploomber --upgrade
+    (base)$pip install soopervisor --upgrade
+
+### load example project
+    ploomber examples -n cookbook/grid -o grid
+    cd grid
+
+### prepare env for batch jobs (Anaconda)
+load the module
     
-## set up environment
-    # init conda
-    eval "$($HOME/miniconda/bin/conda shell.bash hook)"
+    ml Anaconda3/2021.05
+    eval "$(conda shell.bash hook)"
+
+create folder to hold pipeline environment and build env from .yml into prefix location
+
+    mkdir ~/anaconda
+    conda env create --prefix ~/anaconda/cookbook-grid --file environment.yml
     
+    # verify the environment
+    conda activate $HOME/anaconda/cookbook-grid
+    which python
 
-### env create fails on rci slurm 
-    # create and activate env
-    conda env create --name myenv
-    conda activate myenv
-TODO find out why
+#### set up template.sh for slurm jobs
+go to grid project folder
 
-#### pip install ploomber soopervisor
-    # install ploomber and soopervisor in the base environment
-    pip install ploomber
-    # install soopervisor from the slurm branch
-    pip install git+https://github.com/ploomber/soopervisor
-
-#### cd into example project
-ploomber/slurm/example
-
-    # install project dependencies
-    pip install -r requirements.txt
-    
-#### optional set up example project 
-    # download sample pipeline to example/
-    ploomber examples -n templates/ml-basic -o example
-    cd example
-    
-    # install project dependencies
-    pip install -r requirements.txt
-
-
-#### optional: set up slurm as executor
-    # register a soopervisor environment with the SLURM backend
+    # if cluster directory does not exist
     soopervisor add cluster --backend slurm
 
-creates submit script template.sh in cluster subfolder.
-
-#### set up slurm job submit script: template.sh
-in cluster/template.sh edit it accordiingly.
+modify cluster/template.sh as follows:
 
     #!/bin/bash
     #SBATCH --job-name={{name}}
     #SBATCH --output=result.out
     #
     
-    # activate base
-    conda activate base
+    # load anaconda module
+    module purge
+    ml Anaconda3/2021.05
+    # activate prepared environment
+    
+    eval "$(conda shell.bash hook)"
+    conda activate $HOME/anaconda/cookbook-grid
+    
+    #srun with specified env variables above. 
     srun {{command}}
+
+where **$HOME/anaconda** is our environment folder and **cookbook-grid** is our environment.
+
+
+### singularity for environment
+for more complex environments beyond python packages, singularity container will be required.
+    
+    ml singularity
+    singularity version
+
+    # the following fails for more complex containers
+    singularity run docker://godlovedc/lolcow
+
+singularity run fails for some docker containers
+in that case, rebuilt at a local machine and push into singularity repo works best.
+
+## Local slurm cluster
+TODO

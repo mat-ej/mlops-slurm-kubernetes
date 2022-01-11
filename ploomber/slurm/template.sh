@@ -3,6 +3,13 @@
 #SBATCH --output=result.out
 #
 
-# activate base
-conda activate base
+# load anaconda module
+module purge
+ml Anaconda3/2021.05
+# activate prepared environment
+
+eval "$(conda shell.bash hook)"
+conda activate $HOME/anaconda/cookbook-grid
+
+#srun with specified env variables above.
 srun {{command}}
