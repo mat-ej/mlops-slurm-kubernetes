@@ -7,7 +7,6 @@
 
 ## install helm chart
     helm repo add dask https://helm.dask.org/
-    repository
     helm repo update
     helm install my-dask dask/dask
     kubectl describe

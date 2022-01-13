@@ -85,10 +85,15 @@ set up soopervisor.yaml or use one from this repo
     soopervisor export training --skip-tests --mode force
     
     # import image to the k8s cluster
-    k3d image import ml-intermediate:latest --cluster mycluster
+    k3d image import ml-intermediate:latest --cluster mycluster 
     
     # submit workflow
     argo submit -n argo --watch training/argo.yaml
+
+### clean up cluster    
+
+    k3d cluster delete mycluster
+    
 
 NOTE:
 --mode force is to force re run of tasks, if pipeline already ran, some steps would be skipped. 
