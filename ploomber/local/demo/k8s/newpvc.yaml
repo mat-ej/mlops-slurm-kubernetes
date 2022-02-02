@@ -1,0 +1,50 @@
+#kind: PersistentVolumeClaim
+#apiVersion: v1
+#metadata:
+#    name: etela
+#spec:
+#    accessModes:
+#      - ReadWriteMany
+#    storageClassName: nfs-csi
+#    resources:
+#        requests:
+#            storage: 1Gi
+#
+#---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp1
+spec:
+  containers:
+  - name: my-app
+    image: nginx
+    ports:
+    - containerPort: 8080
+    imagePullPolicy: Always
+    volumeMounts:
+      - mountPath: /data
+        name: data
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: 'etela'
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp2
+spec:
+  containers:
+    - name: my-app
+      image: nginx
+      ports:
+        - containerPort: 8080
+      imagePullPolicy: Always
+      volumeMounts:
+        - mountPath: /data
+          name: data
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: 'etela'

@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp
+spec:
+  containers:
+  - name: my-app
+    image: nginx
+    ports:
+    - containerPort: 8080
+    imagePullPolicy: Always
+    volumeMounts:
+      - name: my-volume
+        mountPath: /app
+  volumes:
+    - name: my-volume
+      hostPath:
+        path: /mnt/vpath
+
+
+#apiVersion→  ##  Deployment object apiVersion. Every object in Kubernetes has its apiVersion with values which includes v1, apps/v1, batch/v1 depending on the object.
+#kind →  ## This field declares the object and the value must be in sentence case.
+#metadata.name 🡪 ## The name of the object to be created is declared in this field.
+#spec.containers.name 🡪 ## This field declares the name of the container image.
+#spec.containers.image 🡪 ## The container image for the application is declared in this field.
+#volumes.name → ## The name of the volume is declared in this field.
+#volumes.emptyDir →  ## The volume type is specified in this field.
+#volumeMounts.name → ## The declared volume is injected into the container in this field which is why the declaration is under the container specification. The name must be the same as the name of the volumes.
+#volumeMounts.mountPath → The path where the volume will be mounted.

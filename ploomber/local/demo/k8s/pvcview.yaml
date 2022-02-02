@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dataaccess
+spec:
+  containers:
+  - name: alpine
+    image: alpine:latest
+    command: ['sleep', 'infinity']
+    volumeMounts:
+    - name: products
+      mountPath: /data
+  volumes:
+  - name: products
+    persistentVolumeClaim:
+      claimName: products

@@ -1,0 +1,69 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: demo-
+spec:
+  entrypoint: dag
+  templates:
+  - inputs:
+      parameters:
+      - name: task_name
+    name: run-task
+    script:
+      command:
+      - bash
+      image: matejcvut/demo:latest
+      source: |-
+        whoami
+        pwd
+        ls -la /mnt/
+        ploomber task {{inputs.parameters.task_name}} --entry-point pipeline.yaml --force
+        chown -R jovyan:users /mnt/products
+        ls -la /mnt/
+        
+
+      volumeMounts:
+      - mountPath: /mnt/products
+        name: products
+        subPath: ''
+      workingDir: null
+  - dag:
+      tasks:
+      - arguments:
+          parameters:
+          - name: task_name
+            value: get
+        dependencies: []
+        name: get
+        template: run-task
+      - arguments:
+          parameters:
+          - name: task_name
+            value: sepal-feature
+        dependencies:
+        - get
+        name: sepal-feature
+        template: run-task
+      - arguments:
+          parameters:
+          - name: task_name
+            value: petal-feature
+        dependencies:
+        - get
+        name: petal-feature
+        template: run-task
+      - arguments:
+          parameters:
+          - name: task_name
+            value: fit
+        dependencies:
+        - petal-feature
+        - get
+        - sepal-feature
+        name: fit
+        template: run-task
+    name: dag
+  volumes:
+  - hostPath:
+      path: /mnt/products
+    name: products

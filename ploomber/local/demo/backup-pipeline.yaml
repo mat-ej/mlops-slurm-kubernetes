@@ -1,0 +1,22 @@
+meta:
+    import_tasks_from: features.yaml
+
+    # Extract upstream dependencies from source code. If False, tasks
+    # must declare dependencies using the "upstream" key
+    extract_upstream: False
+
+    # Extract product from source code. If False, tasks must have a "product" key
+    extract_product: False
+
+tasks:
+  - source: scripts/get.py
+    upstream: null
+    product:
+      nb: /mnt/products/{{out}}/get.ipynb
+      data: /mnt/products/{{out}}/get.csv
+
+  - source: scripts/fit.py
+    upstream: ['get', 'sepal-feature', 'petal-feature']
+    product:
+      nb: /mnt/products/{{out}}/fit.ipynb
+      model: /mnt/products/{{out}}/model.pickle

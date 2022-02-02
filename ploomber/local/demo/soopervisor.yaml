@@ -1,0 +1,19 @@
+serve:
+  backend: aws-batch
+  container_properties:
+    memory: 16384
+    vcpus: 8
+  job_queue: aws-jobqueue-ploomber
+  region_name: eu-west-1
+  repository: matejcvut/demo
+
+argo:
+  backend: argo-workflows
+  repository: matejcvut/demo
+
+  mounted_volumes:
+    - name: products
+      spec:
+        hostPath:
+          path: /mnt/products
+

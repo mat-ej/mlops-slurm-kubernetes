@@ -1,0 +1,15 @@
+artifact_uri: file:///home/m/repo/mlops-slurm-kubernetes/ploomber/local/demo/mlruns/1/eb69bbc90afa4ea29f81ac5a15ce4957/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '1'
+lifecycle_stage: active
+name: ''
+run_id: eb69bbc90afa4ea29f81ac5a15ce4957
+run_uuid: eb69bbc90afa4ea29f81ac5a15ce4957
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1643801331078
+status: 1
+tags: []
+user_id: m

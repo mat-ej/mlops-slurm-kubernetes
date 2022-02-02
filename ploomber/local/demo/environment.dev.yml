@@ -1,0 +1,14 @@
+name: demo
+
+channels:
+  - conda-forge
+
+dependencies:
+  - pip
+  # uncomment the next line if you want to use "ploomber plot"
+  # - pygraphviz
+  - pip:
+    # add here other dependencies that are only needed for development
+    - pytest
+    - jupyter
+    - jupyterlab

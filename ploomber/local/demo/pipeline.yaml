@@ -1,0 +1,63 @@
+meta:
+#    import_tasks_from: features.yaml
+
+    # Extract upstream dependencies from source code. If False, tasks
+    # must declare dependencies using the "upstream" key
+    extract_upstream: False
+
+    # Extract product from source code. If False, tasks must have a "product" key
+    extract_product: False
+
+#executor: serial
+
+tasks:
+    - source: tasks.raw.get
+      name: get
+      upstream: null
+      product: products/raw/get.csv
+
+    - source: tasks.features.sepal
+      name: sepal
+      upstream: ['get']
+      product: products/features/sepal.csv
+
+    - source: tasks.features.petal
+      name: petal
+      upstream: [ 'get' ]
+      product: products/features/petal.csv
+
+    - source: tasks.features.features
+      name: features
+      upstream: ['get', 'sepal', 'petal']
+      product: products/features/features.csv
+
+    - source: tasks.fit.fit
+      name: fit-
+      upstream: [ 'features' ]
+      product:
+        model: products/model.pickle
+      # we need to turn this off because parameters depend on the type of model
+#      static_analysis: false
+
+      grid:
+      - model: sklearn.ensemble.RandomForestClassifier
+        n_estimators: [5, 10, 20]
+        criterion: [gini, entropy]
+        track: '{{track}}'
+        mlflow_tracking_uri: '{{mlflow_tracking_uri}}'
+#      on_finish: hooks.store_report
+
+    - source: scripts/compare.py
+      product: products/compare.ipynb
+      params:
+        mlflow_tracking_uri: '{{mlflow_tracking_uri}}'
+
+#      - model: sklearn.ensemble.AdaBoostClassifier
+#        n_estimators: [1, 3, 5]
+#        learning_rate: [1, 2]
+#      params:
+#          model: sklearn.ensemble.RandomForestClassifier
+#          model_args:
+#            n_estimators: 10
+#            criterion: gini
+##            params_names: [[n_estimators, criterion]]
